@@ -85,7 +85,41 @@ class WordleBot
     end
     result.join
   end
+
+  def _value(guess, secret)
+    value = 0
+    result = score(guess, secret)
+    result.split("").each do |letter|
+      if (letter == "*")
+        value -= 1
+      elsif (letter.upcase == letter)
+        value += 7
+      else
+        value += 5
+      end
+    end
+    value
+  end
+
+  def train
+    @words = Set.new(@dict)
+    results = Hash.new { |h, k| h[k] = 0.0 }
+    @words.each do |guess|
+      @words.each do |secret|
+        next if guess == secret
+        results[guess] += _value(guess, secret)
+      end
+      results[guess] /= @words.length
+    end
+    results.sort_by { |k, v| v }.reverse.to_h
+  end
 end
+
+wordlebot = WordleBot.new
+results = wordlebot.train
+puts results
+
+exit
 
 wordlebot = WordleBot.new
 guess = wordlebot.play
