@@ -64,7 +64,7 @@ class WordleBot
     scores.each do |word, value|
       guesses << word if value >= average
     end
-    guesses.sample
+    guesses.first
   end
 
   def game(id)
