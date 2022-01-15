@@ -89,22 +89,16 @@ end
 
 wordlebot = WordleBot.new
 guess = wordlebot.play
+secret = ARGV.first
 loop do
   puts guess
-  score = wordlebot.score(guess, "panic")
-  puts score
-  break if guess.upcase == score
-  guess = wordlebot.play(score)
-end
-
-exit
-
-wordlebot = WordleBot.new
-guess = wordlebot.play
-loop do
-  puts guess
-  print "> "
-  score = gets.strip
+  if secret.nil?
+    print "> "
+    score = gets.strip
+  else
+    score = wordlebot.score(guess, secret)
+    puts score
+  end
   break if guess.upcase == score
   guess = wordlebot.play(score)
 end
