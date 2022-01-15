@@ -108,6 +108,37 @@ class WordleBot
   end
 end
 
+answers = File.read("answers.txt").split("\n").map(&:strip)
+answers.each.with_index do |secret, i|
+  wordlebot = WordleBot.new
+  guess = wordlebot.play
+  grid = []
+  count = 0
+  loop do
+    count += 1
+    score = wordlebot.score(guess, secret)
+    emoji = []
+    score.split("").each do |letter|
+      if letter == "*"
+        emoji << '⬛'
+      elsif letter.upcase == letter
+        emoji << '🟩'
+      else
+        emoji << '🟨'
+      end
+    end
+    grid << emoji.join
+    break if guess.upcase == score
+    guess = wordlebot.play(score)
+  end
+  puts "Wordle #{i} #{count}/6\n"
+  grid.each { |line| puts line }
+  puts ""
+  break if i > 212
+end
+
+exit
+
 wordlebot = WordleBot.new
 guess = wordlebot.play
 secret = ARGV.first
