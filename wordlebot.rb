@@ -5,6 +5,7 @@ require 'set'
 class WordleBot
   def initialize
     @dict = DATA.map { |line| line.strip! }
+    @words = Set.new(@dict)
   end
 
   def _start
@@ -48,10 +49,22 @@ class WordleBot
     end
   end
 
-  def _guess
-    # find best guess from @words
-    puts "(#{@words.length} words)"
-    @words.to_a.sample
+  def _guess(start)
+    return "arose" if start
+    scores = Hash.new
+    total = 0.0
+    @words.each do |word|
+      value = 0.0
+      @words.each { |guess| value += _value(guess, word) }
+      scores[word] = value
+      total += value
+    end
+    average = total / @words.length
+    guesses = []
+    scores.each do |word, value|
+      guesses << word if value >= average
+    end
+    guesses.sample
   end
 
   def game(id)
@@ -60,7 +73,7 @@ class WordleBot
 
   def play(result = nil)
     result.nil? ? _start : _update(result)
-    @guess = _guess
+    @guess = _guess(result.nil?)
   end
 
   def score(guess, secret)
@@ -88,50 +101,24 @@ class WordleBot
 
   def _value(guess, secret)
     value = 0
-    result = score(guess, secret)
-    result.split("").each do |letter|
-      if (letter == "*")
-        value -= 1
-      elsif (letter.upcase == letter)
-        value += 7
-      else
-        value += 5
-      end
+    score(guess, secret).split("").each do |letter|
+      value += 1 unless letter == '*'
     end
     value
   end
-
-  def train
-    @words = Set.new(@dict)
-    results = Hash.new { |h, k| h[k] = 0.0 }
-    @words.each do |guess|
-      @words.each do |secret|
-        next if guess == secret
-        results[guess] += _value(guess, secret)
-      end
-      results[guess] /= @words.length
-    end
-    results.sort_by { |k, v| v }.reverse.to_h
-  end
 end
-
-wordlebot = WordleBot.new
-results = wordlebot.train
-puts results
-
-exit
 
 wordlebot = WordleBot.new
 guess = wordlebot.play
 secret = ARGV.first
 loop do
-  puts guess
   if secret.nil?
+    puts guess
     print "> "
     score = gets.strip
   else
     score = wordlebot.score(guess, secret)
-    puts score
+    puts "#{guess} | #{score}"
   end
   break if guess.upcase == score
   guess = wordlebot.play(score)
