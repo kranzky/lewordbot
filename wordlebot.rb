@@ -11,6 +11,7 @@ class WordleBot
     @guess = nil
     @words = Set.new(@dict)
     @frame = Array.new(5) { Set.new('a'..'z') }
+    @match = Set.new()
   end
 
   def _update(result)
@@ -19,6 +20,7 @@ class WordleBot
     result.each.with_index do |letter, i|
       next unless guess[i].upcase == letter
       @frame[i] = Set.new([guess[i]])
+      @match << guess[i]
     end
     result.each.with_index do |letter, i|
       next unless letter == "*"
@@ -28,6 +30,7 @@ class WordleBot
       next unless guess[i] == letter
       @frame.each { |frame| frame << guess[i] unless frame.length == 1 }
       @frame[i].delete(guess[i])
+      @match << guess[i]
     end
     result.each.with_index do |letter, i|
       next unless letter == "*"
@@ -35,7 +38,8 @@ class WordleBot
     end
     puts @frame
     @words.delete_if do |word|
-      keep = true
+      check = Set.new(word.split(""))
+      keep = @match.all? { |letter| check.include?(letter) }
       @frame.each.with_index do |frame, i|
         keep &= frame.include?(word[i])
         break unless keep
