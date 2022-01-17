@@ -67,10 +67,6 @@ class WordleBot
     guesses.first
   end
 
-  def game(id)
-    ANSWERS[id]
-  end
-
   def play(result = nil)
     result.nil? ? _start : _update(result)
     @guess = _guess(result.nil?)
@@ -107,35 +103,6 @@ class WordleBot
     value
   end
 end
-
-#answers = File.read("answers.txt").split("\n").map(&:strip)
-#wordlebot = WordleBot.new
-#answers.each.with_index do |secret, i|
-#  guess = wordlebot.play
-#  grid = []
-#  count = 0
-#  loop do
-#    count += 1
-#    score = wordlebot.score(guess, secret)
-#    emoji = []
-#    score.split("").each do |letter|
-#      if letter == "*"
-#        emoji << '⬛'
-#      elsif letter.upcase == letter
-#        emoji << ''
-#      else
-#        emoji << '🟨'
-#      end
-#    end
-#    grid << emoji.join
-#    break if guess.upcase == score
-#    guess = wordlebot.play(score)
-#  end
-#  puts "Wordle #{i} #{count}/6"
-#  puts ""
-#  grid.each { |line| puts line }
-#  puts ""
-
 
 wordlebot = WordleBot.new
 guess = wordlebot.play
