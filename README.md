@@ -1,6 +1,6 @@
 # Le Word Bot
 
-A simple Ruby script to play Wordle. Tweets at @lewordbot.
+A simple Ruby script to play Wordle. Tweets at [@lewordbot](https://twitter.com/lewordbot).
 
 ## Copyright
 
